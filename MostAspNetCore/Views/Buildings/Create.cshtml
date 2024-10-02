@@ -1,0 +1,114 @@
+﻿@using MostLib.Enums
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model MostLib.Building
+
+@{
+    ViewData["Title"] = "Добавление здания";
+    string mapBoxToken = Configuration["MapBoxToken"];
+}
+
+<h1>Добавление здания</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-3">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>                
+            <div class="form-group mb-1">
+                <label asp-for="Address" class="control-label"></label>
+                <textarea asp-for="Address" rows="3" class="form-control" id="inputAddress" readonly> </textarea>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-1" >
+                <label asp-for="Coordinates" class="control-label"></label>
+                <input asp-for="Coordinates" class="form-control" id="inputCoordinates" readonly />
+                <span asp-validation-for="Coordinates" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-1">
+                <label asp-for="BuildingName" class="control-label"></label>
+                <input asp-for="BuildingName" class="form-control" />
+                <span asp-validation-for="BuildingName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-1">
+                <label asp-for="BuildingTypeId" class="control-label"></label>
+                <select asp-for="BuildingTypeId" class="form-control">
+                    <option value="0">Магазин</option>
+                    <option value="1">Склад</option>
+                </select>
+                <span asp-validation-for="BuildingTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Comment" class="control-label"></label>
+                <textarea asp-for="Comment" class="form-control" ></textarea>
+                <span asp-validation-for="Comment" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-1">
+                <input type="submit" value="Добавить" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    <div class="col-md-9">
+        <div style="height:400px; border: 1px solid black;" id="map"></div>
+    </div>
+    
+</div>
+
+<div>
+    <a class="text-decoration-none" asp-action="Index">Назад к списку</a>
+</div>
+
+<!--MapBox-->
+<script>
+    mapboxgl.accessToken = '@mapBoxToken';
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [37.61754363373598, 55.75130741634757],
+        zoom: 8
+    });
+
+    const geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl,
+        reverseGeocode: true
+    });
+
+    map.on('load', () => {
+        // Listen for the `geocoder.input` event that is triggered when a user
+        // makes a selection
+        geocoder.on('result', (event) => {
+            console.log(event.result);
+            const inputAddress = document.getElementById('inputAddress');
+            const coordinates = document.getElementById('inputCoordinates')
+            inputAddress.value = event.result.place_name;
+            coordinates.value = event.result.geometry.coordinates;
+
+        });
+    });
+
+    map.addControl(geocoder, 'top-left');
+
+    map.on('click', function (e) {
+        var coordinates = e.lngLat;
+        var mapboxApiUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
+        var apiKey = mapboxgl.accessToken;
+        var url = mapboxApiUrl + coordinates.lng + ',' + coordinates.lat + '.json?access_token=' + apiKey;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Обработка данных, полученных от Mapbox Geocoding API
+                var latitude = data.query[0];
+                var longitude = data.query[1];
+                geocoder.query(longitude + ',' + latitude);
+            })
+            .catch(error => {
+                console.error('Произошла ошибка:', error);
+            });
+    });
+</script>
+<!--/MapBox-->
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

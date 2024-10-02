@@ -1,0 +1,76 @@
+﻿@model IEnumerable<MostLib.Building>
+
+<div class="row">
+    <div class="col"><h1>@ViewData["Title"]</h1></div>
+    <div class="col text-end p-2">
+        <a asp-action="Index" type="button" class="btn btn-outline-success btn-lg">Здания</a>
+        <a asp-action="Stores" type="button" class="btn btn-outline-primary btn-lg">Магазины</a>
+        <a asp-action="Warehouses" type="button" class="btn btn-outline-primary btn-lg">Склады</a>
+    </div>
+</div>
+
+
+<p>
+    <a asp-action="Create" class="text-decoration-none">Добавить здание</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BuildingName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BuildingTypeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BuildingName)
+            </td>
+            <td>
+                    @switch (item.BuildingTypeId)
+                    {
+                        case MostLib.Enums.BuildingType.Store: <text>Магазин</text>
+                        break;
+                        case MostLib.Enums.BuildingType.Warehouse: <text>Склад</text>
+                        break;
+                        default: <text>Тип здания</text>
+                        break;
+                    }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Comment)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.BuildingId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.BuildingId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.BuildingId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@if(Model.Count() == 0)
+{
+    <div class="text-center mt-5">
+        <h2>@ViewData["Title"] отсутствуют!</h2>
+    </div>
+    <div class="text-center mt-3">
+        <a asp-action="Create" class="btn btn-primary">Добавить здание</a>
+    </div>
+    
+}
+
