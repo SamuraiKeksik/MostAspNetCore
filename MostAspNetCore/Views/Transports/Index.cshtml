@@ -1,0 +1,171 @@
+﻿@model IEnumerable<MostLib.Transport>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Brand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Model)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReleaseDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VinNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LicensePlateNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mileage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaxFuel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TransportTypeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CanAttachTrailer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaxWeight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Length)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Width)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Height)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AxesTypeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ResponsibleDriver)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CurrentRoute)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Brand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Model)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReleaseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VinNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LicensePlateNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Mileage)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaxFuel)
+            </td>
+            <td>
+                @switch (item.TransportTypeId)
+                    {
+                        case MostLib.Enums.TransportType.OnBoard: <text>Бортовой</text>
+                        break;
+                        case MostLib.Enums.TransportType.LowFrame: <text>Низкорамный</text>
+                        break;
+                        case MostLib.Enums.TransportType.Platform: <text>Платформа</text>
+                        break;
+                        case MostLib.Enums.TransportType.Awning: <text>Тентованый</text>
+                        break;
+                        case MostLib.Enums.TransportType.AllMetal: <text>Цельнометаличесий</text>
+                        break;
+                        case MostLib.Enums.TransportType.IndustrialGoods: <text>Промтоварный</text>
+                        break;
+                        case MostLib.Enums.TransportType.Isometric: <text>Изометрический</text>
+                        break;
+                        case MostLib.Enums.TransportType.Refrigerator: <text>Рефрижератор</text>
+                        break;
+                        case MostLib.Enums.TransportType.Tank: <text>Цистерна</text>
+                        break;
+                        case MostLib.Enums.TransportType.Construction: <text>Строительная</text>
+                        break;
+                        case MostLib.Enums.TransportType.SpecialEquipment: <text>Спецтехника</text>
+                        break;
+                        default: <text>Неизвестно</text>
+                        break;
+                    }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CanAttachTrailer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaxWeight)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Length)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Width)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Height)
+            </td>
+            <td>
+                @switch (item.AxesTypeId)
+                    {
+                        case MostLib.Enums.TransportAxesType.TwoAxle: <text>Двухосный транспорт</text>
+                        break;
+                        case MostLib.Enums.TransportAxesType.ThreeAxle: <text>Трехосный транспорт</text>
+                        break;
+                        case MostLib.Enums.TransportAxesType.FourAxle: <text>Четырехосный транспорт</text>
+                        break;
+                        case MostLib.Enums.TransportAxesType.FiveAxle: <text>Пятиосный транспорт</text>
+                        break;
+                        case MostLib.Enums.TransportAxesType.SixAxle: <text>Шестиосный транспорт</text>
+                        break;
+                        default: <text>Тип здания</text>
+                        break;
+                    }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ResponsibleDriver.DriverLicenseNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CurrentRoute.UserId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.TransportId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.TransportId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.TransportId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

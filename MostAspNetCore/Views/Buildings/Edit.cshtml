@@ -79,12 +79,12 @@
     });
 
     map.on('load', () => { 
-        var popup = new mapboxgl.Popup({ offset: 25 })
+        var popup = new mapboxgl.Popup({ offset: 25 }) //Создаем popup
             .setText(document.getElementById('inputAddress').value);
 
         const marker = new mapboxgl.Marker({ color: '#314ccd' }) // Добавляем маркер с нужным цветом
         .setLngLat([latitude, longitude])       // Задаем коорлдинаты
-        .setPopup(popup)
+        .setPopup(popup)        //Добавляем созданный popup
         .addTo(map);        // И добавляем на карту
     });
 

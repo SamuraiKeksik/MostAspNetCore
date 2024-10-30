@@ -1,0 +1,95 @@
+﻿@model MostLib.Trailer
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Trailer</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Brand" class="control-label"></label>
+                <input asp-for="Brand" class="form-control" />
+                <span asp-validation-for="Brand" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Model" class="control-label"></label>
+                <input asp-for="Model" class="form-control" />
+                <span asp-validation-for="Model" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReleaseDate" class="control-label"></label>
+                <input asp-for="ReleaseDate" class="form-control" />
+                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VinNumber" class="control-label"></label>
+                <input asp-for="VinNumber" class="form-control" />
+                <span asp-validation-for="VinNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LicensePlateNumber" class="control-label"></label>
+                <input asp-for="LicensePlateNumber" class="form-control" />
+                <span asp-validation-for="LicensePlateNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TrailerTypeId" class="control-label"></label>
+                <select asp-for="TrailerTypeId" class="form-control"></select>
+                <span asp-validation-for="TrailerTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxWeight" class="control-label"></label>
+                <input asp-for="MaxWeight" class="form-control" />
+                <span asp-validation-for="MaxWeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Length" class="control-label"></label>
+                <input asp-for="Length" class="form-control" />
+                <span asp-validation-for="Length" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Width" class="control-label"></label>
+                <input asp-for="Width" class="form-control" />
+                <span asp-validation-for="Width" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Height" class="control-label"></label>
+                <input asp-for="Height" class="form-control" />
+                <span asp-validation-for="Height" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TrailerAxesTypeId" class="control-label"></label>
+                <select asp-for="TrailerAxesTypeId" class="form-control"></select>
+                <span asp-validation-for="TrailerAxesTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ResponsibleDriverId" class="control-label"></label>
+                <select asp-for="ResponsibleDriverId" class ="form-control" asp-items="ViewBag.ResponsibleDriverId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="CurrentRouteId" class="control-label"></label>
+                <select asp-for="CurrentRouteId" class ="form-control" asp-items="ViewBag.CurrentRouteId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserId" class="control-label"></label>
+                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

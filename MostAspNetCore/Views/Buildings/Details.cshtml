@@ -1,48 +1,203 @@
-﻿@model MostLib.Building
+﻿@using MostLib.Enums
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@model MostLib.Building
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Редактирование здания";
+    string mapBoxToken = Configuration["MapBoxToken"];
 }
 
-<h1>Details</h1>
+
+<h1>Детали здания</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-3">
+        <form> 
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="BuildingId" class="form-control" hidden />
+            <div class="form-group mb-1">
+                <label asp-for="Address" class="control-label"></label>
+                <textarea asp-for="Address" rows="3" class="form-control" id="inputAddress" readonly> </textarea>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-1">
+                <label asp-for="Coordinates" class="control-label"></label>
+                <input asp-for="Coordinates" class="form-control" id="inputCoordinates" readonly />
+                <span asp-validation-for="Coordinates" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-1">
+                <label asp-for="BuildingName" class="control-label"></label>
+                <input asp-for="BuildingName" class="form-control" readonly />
+                <span asp-validation-for="BuildingName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-1">
+                <label asp-for="BuildingTypeId" class="control-label"></label>
+                <select asp-for="BuildingTypeId" class="form-control" readonly>
+                    <option value="0">Магазин</option>
+                    <option value="1">Склад</option>
+                </select>
+                <span asp-validation-for="BuildingTypeId" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Comment" class="control-label"></label>
+                <textarea asp-for="Comment" class="form-control" readonly></textarea>
+                <span asp-validation-for="Comment" class="text-danger"></span>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-9">
+        <div style="height:400px; border: 1px solid black;" id="map"></div>
+    </div>
+</div>
+<h2>Совершенные грузоперевозки</h2>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="profile" aria-selected="false">Все</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="start-tab" data-bs-toggle="tab" data-bs-target="#start" type="button" role="tab" aria-controls="home" aria-selected="true">Здание как начальная точка</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="end-tab" data-bs-toggle="tab" data-bs-target="#end" type="button" role="tab" aria-controls="profile" aria-selected="false">Здание как конечная точка</button>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade" id="all" role="tabpanel" aria-labelledby="all-tab">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">All</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-pane fade show active" id="start" role="tabpanel" aria-labelledby="start-tab">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Start!</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-pane fade" id="end" role="tabpanel" aria-labelledby="end-tab">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">End</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 
 <div>
-    <h4>Building</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Coordinates)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Coordinates)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BuildingName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BuildingName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BuildingTypeId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BuildingTypeId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Comment)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Comment)
-        </dd>
-    </dl>
+    <a class="text-decoration-none" asp-action="Index">Назад к списку</a>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.BuildingId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<!--MapBox-->
+<script>
+    mapboxgl.accessToken = '@mapBoxToken';
+    var mycoordinates = document.getElementById('inputCoordinates').value.split(",");
+    var latitude = mycoordinates[0];
+    var longitude = mycoordinates[1];
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [latitude, longitude],
+        zoom: 14
+    });
+
+    const geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl,
+        reverseGeocode: true
+    });
+
+    map.on('load', () => {
+        var popup = new mapboxgl.Popup({ offset: 25 }) //Создаем popup
+            .setText(document.getElementById('inputAddress').value);
+
+        const marker = new mapboxgl.Marker({ color: '#314ccd' }) // Добавляем маркер с нужным цветом
+            .setLngLat([latitude, longitude])       // Задаем коорлдинаты
+            .setPopup(popup)        //Добавляем созданный popup
+            .addTo(map);        // И добавляем на карту
+    });
+
+</script>
+<!--/MapBox-->
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

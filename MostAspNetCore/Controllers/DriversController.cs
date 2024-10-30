@@ -8,43 +8,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MostAspNetCore.Data;
+using MostAspNetCore.Models;
 using MostLib;
+using MostLib.Enums;
 
 namespace MostAspNetCore.Controllers
 {
     [Authorize]
-    public class BuildingsController : Controller
+    public class DriversController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public BuildingsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public DriversController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
-        // GET: Buildings
+        // GET: Drivers
         public async Task<IActionResult> Index()
         {
-            ViewData["Title"] = "Здания";
-            return View(await _context.Buildings.ToListAsync());
+            var applicationDbContext = _context.Drivers.Include(d => d.CurrentRoute).Include(d => d.User);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        public async Task<IActionResult> Stores()
-        {
-            ViewData["Title"] = "Магазины";
-            return View("Index", await _context.Buildings.Where(b => b.BuildingTypeId == MostLib.Enums.BuildingType.Store).ToListAsync());
-        }
-
-        public async Task<IActionResult> Warehouses()
-        {
-            ViewData["Title"] = "Склады";
-            return View("Index", await _context.Buildings.Where(b => b.BuildingTypeId == MostLib.Enums.BuildingType.Warehouse).ToListAsync());
-        }
-
-
-        // GET: Buildings/Details/5
+        // GET: Drivers/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -52,47 +41,45 @@ namespace MostAspNetCore.Controllers
                 return NotFound();
             }
 
-            var building = await _context.Buildings
-                .FirstOrDefaultAsync(m => m.BuildingId == id);
-            if (building == null)
+            var driver = await _context.Drivers
+                .Include(d => d.CurrentRoute)
+                .Include(d => d.User)
+                .FirstOrDefaultAsync(m => m.DriverId == id);
+            if (driver == null)
             {
                 return NotFound();
             }
 
-            return View(building);
+            return View(driver);
         }
 
-        // GET: Buildings/Create
-        public async Task<IActionResult> Create()
+        // GET: Drivers/Create
+        public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Buildings/Create
+        // POST: Drivers/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Building building)
+        public async Task<IActionResult> Create(Driver driver)
         {
-            ModelState.Remove("BuildingId");
-            ModelState.Remove("User");      //Реализовать проверку на пользователя
+            ModelState.Remove("User");
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(User);
-                if (user == null)
-                    return Unauthorized();
-
-                building.BuildingId = Guid.NewGuid();
-                building.User = user;
-                _context.Add(building);
+                driver.User = user;
+                driver.DriverId = Guid.NewGuid();
+                _context.Add(driver);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(building);
+            return View(driver);
         }
 
-        // GET: Buildings/Edit/5
+        // GET: Drivers/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -100,32 +87,37 @@ namespace MostAspNetCore.Controllers
                 return NotFound();
             }
 
-            var building = await _context.Buildings.FindAsync(id);
-            if (building == null)
+            var driver = await _context.Drivers.FindAsync(id);
+            if (driver == null)
             {
                 return NotFound();
             }
-            return View(building);
+            ViewData["CurrentRouteId"] = new SelectList(_context.Routes, "RouteId", "UserId", driver.CurrentRouteId);
+            return View(driver);
         }
 
-        // POST: Buildings/Edit/5
+        // POST: Drivers/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("BuildingId,Address,Coordinates,BuildingName,BuildingTypeId,Comment")] Building building)
+        public async Task<IActionResult> Edit(Guid id, [Bind("DriverId,FullName,BirthDate,PhoneNumber,Email,DriverLicenseNumber,DriverLicenseExpirationDate,DriverLicenseCategory,Photo,CurrentRouteId,UserId")] Driver driver)
         {
-            ModelState.Remove("User");      //Реализовать проверку на пользователя
+            if (id != driver.DriverId)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(building);
+                    _context.Update(driver);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BuildingExists(building.BuildingId))
+                    if (!DriverExists(driver.DriverId))
                     {
                         return NotFound();
                     }
@@ -136,10 +128,11 @@ namespace MostAspNetCore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(building);
+            ViewData["CurrentRouteId"] = new SelectList(_context.Routes, "RouteId", "UserId", driver.CurrentRouteId);
+            return View(driver);
         }
 
-        // GET: Buildings/Delete/5
+        // GET: Drivers/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -147,34 +140,36 @@ namespace MostAspNetCore.Controllers
                 return NotFound();
             }
 
-            var building = await _context.Buildings
-                .FirstOrDefaultAsync(m => m.BuildingId == id);
-            if (building == null)
+            var driver = await _context.Drivers
+                .Include(d => d.CurrentRoute)
+                .Include(d => d.User)
+                .FirstOrDefaultAsync(m => m.DriverId == id);
+            if (driver == null)
             {
                 return NotFound();
             }
 
-            return View(building);
+            return View(driver);
         }
 
-        // POST: Buildings/Delete/5
+        // POST: Drivers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var building = await _context.Buildings.FindAsync(id);
-            if (building != null)
+            var driver = await _context.Drivers.FindAsync(id);
+            if (driver != null)
             {
-                _context.Buildings.Remove(building);
+                _context.Drivers.Remove(driver);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BuildingExists(Guid id)
+        private bool DriverExists(Guid id)
         {
-            return _context.Buildings.Any(e => e.BuildingId == id);
+            return _context.Drivers.Any(e => e.DriverId == id);
         }
     }
 }
