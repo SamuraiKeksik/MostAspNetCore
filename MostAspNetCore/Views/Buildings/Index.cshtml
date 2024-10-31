@@ -41,15 +41,7 @@
                 @Html.DisplayFor(modelItem => item.BuildingName)
             </td>
             <td>
-                    @switch (item.BuildingTypeId)
-                    {
-                        case MostLib.Enums.BuildingType.Store: <text>Магазин</text>
-                        break;
-                        case MostLib.Enums.BuildingType.Warehouse: <text>Склад</text>
-                        break;
-                        default: <text>Тип здания</text>
-                        break;
-                    }
+                @Html.DisplayFor(modelItem => item.BuildingTypeId)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Comment)

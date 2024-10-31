@@ -1,12 +1,16 @@
 ﻿@model MostLib.Transport
+@using System.Reflection;
+@using MostLib.Enums
+@using System.ComponentModel.DataAnnotations
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Добавление транспорта";
+    int transportTypeCount = 0;
+    int transportAxesTypeCount = 0;
 }
 
-<h1>Create</h1>
+<h1>Добавление транспорта</h1>
 
-<h4>Transport</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -50,16 +54,15 @@
             <div class="form-group">
                 <label asp-for="TransportTypeId" class="control-label"></label>
                 <select asp-for="TransportTypeId" class="form-control">
-                    <option value="0">Бортовой</option>
-                    <option value="1">Низкорамный</option>
-                    <option value="2">Платформа</option>
-                    <option value="3">Тентованый</option>
-                    <option value="4">Цельнометаличесий</option>
-                    <option value="5">Промтоварный</option>
-                    <option value="6">Изометрический</option>
-                    <option value="7">Рефрижератор</option>
-                    <option value="8">Цистерна</option>
-                    <option value="9">Строительная Спецтехника </option>                    
+                    @foreach (var type in Enum.GetValues(typeof(TransportType)))
+                    {
+                        var memberInfo = typeof(TransportType).GetMember(type.ToString()).First();
+                        var displayAttribute = memberInfo.GetCustomAttribute<DisplayAttribute>();
+                        var displayName = displayAttribute != null ? displayAttribute.Name : type.ToString();
+
+                        <option value="@transportTypeCount">@displayName</option>
+                        transportTypeCount++;
+                    }                                     
                 </select>
                 <span asp-validation-for="TransportTypeId" class="text-danger"></span>
             </div>
@@ -91,11 +94,14 @@
             <div class="form-group">
                 <label asp-for="AxesTypeId" class="control-label"></label>
                 <select asp-for="AxesTypeId" class="form-control">
-                    <option value="0">Двухосный транспорт</option>
-                    <option value="1">Трехосный транспорт</option>
-                    <option value="2">Четырехосный транспорт</option>
-                    <option value="3">Пятиосный транспорт</option>
-                    <option value="4">Шестиосный транспорт</option>
+                    @foreach(var type in Enum.GetValues(typeof(TransportAxesType)))
+                    {
+                        var memberInfo = typeof(TransportAxesType).GetMember(type.ToString()).First();
+                        var displayAttribute = memberInfo.GetCustomAttribute<DisplayAttribute>();
+                        var displayName = displayAttribute.GetName();
+                        <option value="@transportAxesTypeCount">@displayName</option>
+                        transportAxesTypeCount++;
+                    }
                 </select>
                 <span asp-validation-for="AxesTypeId" class="text-danger"></span>
             </div>
@@ -107,19 +113,19 @@
                 <label asp-for="CurrentRouteId" class="control-label"></label>
                 <select asp-for="CurrentRouteId" class ="form-control" asp-items="ViewBag.CurrentRouteId"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="UserId" class="control-label"></label>
                 <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="form-group mb-1">
+                <input type="submit" value="Добавить" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a class="text-decoration-none" asp-action="Index">Назад к списку</a>
 </div>
 
 @section Scripts {

@@ -49,7 +49,7 @@ namespace MostLib
         public List<Penalty> Penalties { get; set; } = new List<Penalty> { };
 
         [ForeignKey(nameof(CurrentRoute))]
-        [DisplayName("Дата рождения")]
+        [DisplayName("Текущий маршрут")]
         public Guid? CurrentRouteId { get; set; }   //Содержит маршрут в котором в настоящее время используется транспорт
         public Route? CurrentRoute { get; set; }
 

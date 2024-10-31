@@ -1,14 +1,13 @@
 ﻿@model MostLib.Building
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Удаление здания";
 }
 
-<h1>Delete</h1>
+<h1>Удаление здания</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Вы уверены что хотите удалить это здание?</h3>
 <div>
-    <h4>Building</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -45,7 +44,7 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="BuildingId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input type="submit" value="Удалить" class="btn btn-danger" /> |
+        <a class="text-decoration-none" asp-action="Index">Назад к спсику</a>
     </form>
 </div>

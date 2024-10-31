@@ -1,13 +1,12 @@
 ﻿@model MostLib.Driver
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Детали о водителе";
 }
 
-<h1>Details</h1>
+<h1>Детали о водителе</h1>
 
 <div>
-    <h4>Driver</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -58,15 +57,8 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.CurrentRoute.UserId)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Id)
-        </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.DriverId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a class="text-decoration-none" asp-action="Index">Назад к списку</a>
 </div>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace MostAspNetCore.Controllers
     public class TrailersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public TrailersController(ApplicationDbContext context)
+        public TrailersController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Trailers
@@ -63,9 +66,15 @@ namespace MostAspNetCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("TrailerId,Brand,Model,ReleaseDate,VinNumber,LicensePlateNumber,TrailerTypeId,MaxWeight,Length,Width,Height,TrailerAxesTypeId,ResponsibleDriverId,CurrentRouteId,UserId")] Trailer trailer)
         {
+            ModelState.Remove("User");
             if (ModelState.IsValid)
             {
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                if (user == null)
+                    return Unauthorized();
+
                 trailer.TrailerId = Guid.NewGuid();
+                trailer.User = user;
                 _context.Add(trailer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

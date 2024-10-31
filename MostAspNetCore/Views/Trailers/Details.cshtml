@@ -1,13 +1,12 @@
 ﻿@model MostLib.Trailer
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Детали о прицепе";
 }
 
-<h1>Details</h1>
+<h1>Детали о прицепе</h1>
 
 <div>
-    <h4>Trailer</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -97,6 +96,5 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.TrailerId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a class="text-decoration-none" asp-action="Index">Назад к списку</a>
 </div>

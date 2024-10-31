@@ -30,12 +30,6 @@ namespace MostAspNetCore.Data
                     property => (int)property,                 //Хранит в базе как int
                     property => (BuildingType)property);       //Возвращает из базы как BuildingType
 
-           /* modelBuilder.Entity<Driver>()
-                .Property(driver => driver.DriverLicenseCategory)
-                .HasConversion(
-                    property => JsonConvert.SerializeObject(property),                                  //Хранит в базе как JSON
-                    property => JsonConvert.DeserializeObject<List<DriverLicenseCategory>>(property));  //Возвращает из базы как List<DriverLicenseCategory>*/
-
             modelBuilder.Entity<Product>()
                 .Property(product => product.ProductPackageTypeId)
                 .HasConversion(
