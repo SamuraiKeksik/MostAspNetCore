@@ -52,7 +52,7 @@ namespace MostAspNetCore.Data
                 .Property(product => product.Cargos)
                 .HasConversion(
                     property => JsonConvert.SerializeObject(property),                                //Хранит в базе как JSON
-                    property => JsonConvert.DeserializeObject<Dictionary<Product, int>>(property));   //Возвращает из базы как List<Building>
+                    property => JsonConvert.DeserializeObject<List<Cargo>>(property));   //Возвращает из базы как List<Building>
 
             modelBuilder.Entity<Trailer>()
                 .Property(transport => transport.TrailerTypeId)

@@ -1,0 +1,63 @@
+﻿@using MostLib
+@using MostLib.Enums
+@model Cargo
+
+@{
+    ViewData["Title"] = "Конфигурация груза";
+}
+
+<h1>Конфигурация груза</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="get">
+            <div class="form-group">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Количество</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.ProductsList.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <input asp-for="@Model.ProductsList[i].ProductId" type="hidden" readonly />
+                                    <input asp-for="@Model.ProductsList[i].ProductName" type="hidden" readonly />
+
+                                    @Model.ProductsList[i].ProductName
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.ProductsList[i].Quantity" type="number" />
+                                </td>
+                            </tr>
+                        }
+                        
+                    </tbody>
+                </table>
+
+
+
+
+
+
+            </div>
+            <div class="form-group mb-1 mt-3">
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+    <div>
+        <a class="text-decoration-none" asp-action="Index">Назад к списку</a>
+    </div>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }

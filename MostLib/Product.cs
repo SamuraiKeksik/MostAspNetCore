@@ -61,5 +61,8 @@ namespace MostLib
         public string UserId { get; set; }
         public IdentityUser User { get; set; }  //Содержит пользователя, который добавил продукт
 
+        [DisplayName("Количество")]
+        public int Quantity { get; set; } = 0; //Содержит количество товара (Для Cargo)
+
     }
 }

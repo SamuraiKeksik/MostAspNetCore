@@ -28,7 +28,7 @@ namespace MostLib
         public List<Building> Buildings { get; set; } //хранит список точек назначения (зданий)
 
         [Required]
-        public Dictionary<Product, int> Cargos { get; set; } //Хранит справочник из товаров и их количества
+        public List<Cargo> Cargos { get; set; } //Хранит справочник из товаров и их количества
 
         [ForeignKey("User")]
         public string UserId { get; set; }

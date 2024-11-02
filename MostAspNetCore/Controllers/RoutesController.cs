@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MostAspNetCore.Data;
 using MostLib;
+using System.Text.Json;
 
 namespace MostAspNetCore.Controllers
 {
+    [Authorize]
     public class RoutesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -48,14 +51,31 @@ namespace MostAspNetCore.Controllers
             return View(route);
         }
 
-        // GET: Routes/Create
-        public IActionResult Create()
+        // GET: Routes/Cargo
+        public async Task<IActionResult> Cargo()
         {
-            ViewData["DriverId"] = new SelectList(_context.Drivers, "DriverId", "DriverLicenseNumber");
+            var cargo = new Cargo();
+            cargo.ProductsList = new List<Product>();
+            foreach (var product in _context.Products)
+            {
+                product.Quantity = 0;
+                cargo.ProductsList.Add(product);
+            }
+            return View(cargo);
+        }
+
+        // GET: Routes/Create
+        public IActionResult Create(Cargo cargo)
+        {
+            var route = new MostLib.Route();
+            route.Cargos = new List<Cargo>();
+            route.Cargos.Add(cargo);
+
+            ViewData["DriverId"] = new SelectList(_context.Drivers, "DriverId", "FullName");
             ViewData["TrailerId"] = new SelectList(_context.Trailers, "TrailerId", "Brand");
             ViewData["TransportId"] = new SelectList(_context.Transports, "TransportId", "Brand");
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-            return View();
+            return View(route);
         }
 
         // POST: Routes/Create
