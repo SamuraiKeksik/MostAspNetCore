@@ -25,6 +25,11 @@ namespace MostLib
         public Trailer? Trailer { get; set; }  //Если трейлер не используется в маршруте, то null
 
         [Required]
+        [ForeignKey("StartBuilding")]
+        public Guid StartBuildingId { get; set; } //хранит точку отправления (здание)
+        public Building StartBuilding { get; set; } //хранит точку отправления (здание)
+
+        [Required]
         public List<Building> Buildings { get; set; } //хранит список точек назначения (зданий)
 
         [Required]

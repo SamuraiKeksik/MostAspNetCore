@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,5 +41,7 @@ namespace MostLib
         [Required]
         public IdentityUser User { get; set; }  //Содержит пользователя, который добавил здание
 
+        [NotMapped]
+        public string BuildingDescription { get { return $"{BuildingName} - {Address} - {Coordinates}"; } } //Свойство для возврата Имени с Адресом и Координатами в SelectItem
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using MostAspNetCore.Data;
 using MostLib;
 using System.Text.Json;
+using MostAspNetCore.Models.Route;
 
 namespace MostAspNetCore.Controllers
 {
@@ -25,8 +26,8 @@ namespace MostAspNetCore.Controllers
         // GET: Routes
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Routes.Include(r => r.Driver).Include(r => r.Trailer).Include(r => r.Transport).Include(r => r.User);
-            return View(await applicationDbContext.ToListAsync());
+            var routes = _context.Routes.Include(r => r.Driver).Include(r => r.Trailer).Include(r => r.Transport).Include(r => r.User).Include(r => r.StartBuilding);
+            return View(await routes.ToListAsync());
         }
 
         // GET: Routes/Details/5
@@ -67,6 +68,16 @@ namespace MostAspNetCore.Controllers
         // GET: Routes/Create
         public IActionResult Create(Cargo cargo)
         {
+            var model = new RouteCreateViewModel()
+            { 
+                DriversList = new SelectList(_context.Drivers, "DriverId", "FullName"),
+                TrailersList = new SelectList(_context.Trailers, "TrailerId", "Brand"),
+                TransportsList = new SelectList(_context.Transports, "TransportId", "Brand"),
+                BuildingsList = new SelectList(_context.Buildings, "BuildingId", "BuildingDescription"),
+            };
+            model.CargosList.Add(cargo);
+
+            /*
             var route = new MostLib.Route();
             route.Cargos = new List<Cargo>();
             route.Cargos.Add(cargo);
@@ -74,8 +85,9 @@ namespace MostAspNetCore.Controllers
             ViewData["DriverId"] = new SelectList(_context.Drivers, "DriverId", "FullName");
             ViewData["TrailerId"] = new SelectList(_context.Trailers, "TrailerId", "Brand");
             ViewData["TransportId"] = new SelectList(_context.Transports, "TransportId", "Brand");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-            return View(route);
+            ViewData["StartBuildingId"] = new SelectList(_context.Buildings, "BuildingId", "BuildingName");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");*/
+            return View(model);
         }
 
         // POST: Routes/Create
@@ -83,10 +95,13 @@ namespace MostAspNetCore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("RouteId,DriverId,TransportId,TrailerId,Buildings,Cargos,UserId")] MostLib.Route route)
+        public async Task<IActionResult> Create(RouteCreateViewModel model)
         {
+
+            var route = new MostLib.Route();
             if (ModelState.IsValid)
             {
+                
                 route.RouteId = Guid.NewGuid();
                 _context.Add(route);
                 await _context.SaveChangesAsync();

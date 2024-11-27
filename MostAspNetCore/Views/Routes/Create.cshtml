@@ -1,7 +1,10 @@
-﻿@model MostLib.Route
+﻿@using MostAspNetCore.Models.Route
+@model RouteCreateViewModel
+@inject IConfiguration Configuration
 
 @{
     ViewData["Title"] = "Create";
+    string mapBoxToken = Configuration["MapBoxToken"];
 }
 
 <h1>Create</h1>
@@ -13,41 +16,328 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="DriverId" class="control-label"></label>
-                <select asp-for="DriverId" class ="form-control" asp-items="ViewBag.DriverId"></select>
+                <label asp-for="SelectedDriverId" class="control-label"></label>
+                <select asp-for="SelectedDriverId" class="form-control" asp-items="Model.DriversList"></select>
             </div>
             <div class="form-group">
-                <label asp-for="TransportId" class="control-label"></label>
-                <select asp-for="TransportId" class ="form-control" asp-items="ViewBag.TransportId"></select>
+                <label asp-for="SelectedTransportId" class="control-label"></label>
+                <select asp-for="SelectedTransportId" class="form-control" asp-items="Model.TransportsList"></select>
             </div>
             <div class="form-group">
-                <label asp-for="TrailerId" class="control-label"></label>
-                <select asp-for="TrailerId" class ="form-control" asp-items="ViewBag.TrailerId"></select>
+                <label asp-for="SelectedTrailerId" class="control-label"></label>
+                <select asp-for="SelectedTrailerId" class="form-control" asp-items="Model.TrailersList"></select>
             </div>
             <div class="form-group">
-                <label asp-for="Buildings" class="control-label"></label>
-                <input asp-for="Buildings" class="form-control" />
-                <span asp-validation-for="Buildings" class="text-danger"></span>
+                <label asp-for="SelectedStartBuildingId" class="control-label"></label>
+                <select asp-for="SelectedStartBuildingId" class="form-control" asp-items="Model.BuildingsList" onchange="optionChange()"></select>
+                <span asp-validation-for="SelectedStartBuildingId" class="text-danger"></span>
+            </div>
+            <div class="form-group">                
+                <label asp-for="SelectedEndBuildingId" class="control-label"></label>
+                <select asp-for="SelectedEndBuildingId" class="form-control" asp-items="Model.BuildingsList" onchange="optionChange()"></select>
+                <span asp-validation-for="SelectedEndBuildingId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Cargos" class="control-label"></label>
-                <input asp-for="Cargos" class="form-control" />
-                <span asp-validation-for="Cargos" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+                <label asp-for="CargosList" class="control-label"></label>
+                <input asp-for="CargosList" class="form-control" />
+                <span asp-validation-for="CargosList" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
+    <div class="col-md-8">
+        <div style="height:400px; border: 1px solid black;" id="map"></div>
+    </div>
 </div>
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<!--MapBox-->
+<script>
+    mapboxgl.accessToken = '@mapBoxToken';
+
+    var startOptions;  
+    var startCoordinates;
+    var endOptions;
+    var endCoordinates;
+    var middleCoordinates;
+
+    function changeCoordinates() {
+        startOptions = document.getElementById('SelectedStartBuildingId').options;  //Получаем options из SelectedStartBuildingId
+        startCoordinates = startOptions[startOptions.selectedIndex].text.split(" - ")[2].split(","); //Получаем массив двух координат из выбранной option разделяя текст по " - " и разделяя координаты по "," 
+        endOptions = document.getElementById('SelectedEndBuildingId').options;  //Все тоже самое только для SelectedEndBuildingId
+        endCoordinates = endOptions[endOptions.selectedIndex].text.split(" - ")[2].split(",");
+        middleCoordinates = [  //вычисляем середину между двумя координатами
+            (Number(startCoordinates[0]) + Number(endCoordinates[0])) / 2,
+            (Number(startCoordinates[1]) + Number(endCoordinates[1])) / 2,
+        ]
+    }
+    
+    changeCoordinates(); //вызываем функцию чтобы определить 
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: middleCoordinates, // starting position
+        zoom: 12
+    });
+
+
+    // create a function to make a directions request
+    async function getRoute(end) {
+        // make a directions request using cycling profile
+        // an arbitrary start will always be the same
+        // only the end or destination will change
+        const query = await fetch(
+            `https://api.mapbox.com/directions/v5/mapbox/cycling/${startCoordinates[0]},${startCoordinates[1]};${endCoordinates[0]},${endCoordinates[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+            { method: 'GET' }
+        );
+        const json = await query.json();
+        const data = json.routes[0];
+        const route = data.geometry.coordinates;
+        const geojson = {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                type: 'LineString',
+                coordinates: route
+            }
+        };
+        // if the route already exists on the map, we'll reset it using setData
+        if (map.getSource('route')) {
+            map.getSource('route').setData(geojson);
+        }
+        // otherwise, we'll make a new request
+        else {
+            map.addLayer({
+                id: 'route',
+                type: 'line',
+                source: {
+                    type: 'geojson',
+                    data: geojson
+                },
+                layout: {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                paint: {
+                    'line-color': '#3887be',
+                    'line-width': 5,
+                    'line-opacity': 0.75
+                }
+            });
+        }
+        // add turn instructions here at the end
+    }
+
+    map.on('load', () => {
+        // make an initial directions request that
+        // starts and ends at the same location
+        changeCoordinates();
+        getRoute();
+        optionChange();
+    });
+    map.loadImage('/icons/BlueMarker.png', (error, image) => {
+        if (error) throw error;
+        map.addImage('BlueMarker', image);
+    }); 
+    map.loadImage('/icons/RedMarker.png', (error, image) => {
+        if (error) throw error;
+        map.addImage('RedMarker', image);
+    });
+
+    function optionChange() {
+        changeCoordinates();
+        const end = {
+            type: 'FeatureCollection',
+            features: [
+                {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                        type: 'Point',
+                        coordinates: endCoordinates
+                    }
+                }
+            ]
+        };
+        if (map.getLayer('end')) {
+            map.getSource('end').setData(end);
+        } else {
+            map.addLayer({
+                id: 'end',
+                type: 'symbol',
+                source: {
+                    type: 'geojson',
+                    data: {
+                        type: 'FeatureCollection',
+                        features: [
+                            {
+                                type: 'Feature',
+                                properties: {},
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: endCoordinates
+                                }
+                            }
+                        ]
+                    }
+                },
+                layout: {
+                    'icon-image': 'RedMarker', // Use a custom icon image
+                    'icon-size': 0.1,
+                }
+            });
+        }
+        const start = {
+            type: 'FeatureCollection',
+            features: [
+                {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                        type: 'Point',
+                        coordinates: startCoordinates
+                    }
+                }
+            ]
+        };
+        if (map.getLayer('start')) {
+            map.getSource('start').setData(start);
+        } else {
+            map.addLayer({
+                id: 'start',
+                type: 'symbol',
+                source: {
+                    type: 'geojson',
+                    data: {
+                        type: 'FeatureCollection',
+                        features: [
+                            {
+                                type: 'Feature',
+                                properties: {},
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: startCoordinates
+                                }
+                            }
+                        ]
+                    }
+                },
+                layout: {
+                    'icon-image': 'BlueMarker', // Use a custom icon image
+                    'icon-size' : 0.1,
+                }
+            });
+        }
+        getRoute();
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   /* mapboxgl.accessToken = '@mapBoxToken';
+    var startMarker;
+    var endMarker;
+
+    var startBuilding = document.getElementById('SelectedStartBuildingId');
+    var startOptions = startBuilding.options;
+    var startDescription = startOptions[startOptions.selectedIndex].text.split(" - ");
+    var startCoordinates = startDescription[2].split(",");
+    var startLatitude = startCoordinates[0];
+    var startLongitude = startCoordinates[1];
+
+    var endBuilding = document.getElementById('SelectedEndBuildingId');
+    var endOptions = endBuilding.options;
+    var endDescription = endOptions[endOptions.selectedIndex].text.split(" - ");
+    var endCoordinates = endDescription[2].split(",");
+    var endLatitude = endCoordinates[0];
+    var endLongitude = endCoordinates[1];
+
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [startLatitude, startLongitude],
+        zoom: 14
+    });
+
+    map.on('load', () => {
+        var popup = new mapboxgl.Popup({ offset: 25 }) //Создаем popup
+            .setText(startDescription[1]);
+        startMarker = new mapboxgl.Marker({ color: '#314ccd' }) // Добавляем маркер с нужным цветом
+            .setLngLat([startLatitude, startLongitude])       // Задаем коорлдинаты
+            .setPopup(popup)        //Добавляем созданный popup
+            .addTo(map);        // И добавляем на карту
+
+        popup = new mapboxgl.Popup({ offset: 25 }) //Создаем popup
+            .setText(endDescription[1]);
+        endMarker = new mapboxgl.Marker({ color: '#314ccd' }) // Добавляем маркер с нужным цветом
+            .setLngLat([endLatitude, endLongitude])       // Задаем коорлдинаты
+            .setPopup(popup)        //Добавляем созданный popup 
+            .addTo(map);        // И добавляем на карту
+    });
+
+    function changeStartBuilding() {
+        startOptions = startBuilding.options;
+        startDescription = startOptions[startOptions.selectedIndex].text.split(" - ");
+        startCoordinates = startDescription[2].split(",");
+        startLatitude = startCoordinates[0];
+        startLongitude = startCoordinates[1];
+
+        //startMarker.removeMarker();
+
+        map.removeMarkers();
+
+        var popup = new mapboxgl.Popup({ offset: 25 }) //Создаем popup
+            .setText(startDescription[1])
+
+        startMarker = new mapboxgl.Marker({ color: '#314ccd' }) // Добавляем маркер с нужным цветом
+            .setLngLat([startLatitude, startLongitude])       // Задаем коорлдинаты
+            .setPopup(popup)        //Добавляем созданный popup
+            .addTo(map);        // И добавляем на карту
+
+            console.log("START!")
+    };
+    startBuilding.addEventListener('change', changeStartBuilding());
+
+    function changeEndBuilding() {
+        endOptions = endBuilding.options;
+        endDescription = endOptions[endOptions.selectedIndex].text.split(" - ");
+        endCoordinates = endDescription[2].split(",");
+        endLatitude = endCoordinates[0];
+        endLongitude = endCoordinates[1];
+
+        //endMarker.removeMarker();
+
+        var popup = new mapboxgl.Popup({ offset: 25 }) //Создаем popup
+            .setText(endDescription[1])
+
+        endMarker = new mapboxgl.Marker({ color: '#314ccd' }) // Добавляем маркер с нужным цветом
+            .setLngLat([endLatitude, endLongitude])       // Задаем коорлдинаты
+            .setPopup(popup)        //Добавляем созданный popup
+            .addTo(map);        // И добавляем на карту
+    };
+    endBuilding.addEventListener('change', changeEndBuilding());*/
+</script>
+<!--/MapBox-->
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

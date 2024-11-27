@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MostAspNetCore.Data;
 
@@ -10,9 +11,11 @@ using MostAspNetCore.Data;
 namespace MostAspNetCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241103122429_AddRouteStartBuildingProperty")]
+    partial class AddRouteStartBuildingProperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -404,7 +407,7 @@ namespace MostAspNetCore.Migrations
                     b.Property<Guid>("DriverId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("StartBuildingId")
+                    b.Property<Guid>("StartBuildingBuildingId")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid?>("TrailerId")
@@ -421,7 +424,7 @@ namespace MostAspNetCore.Migrations
 
                     b.HasIndex("DriverId");
 
-                    b.HasIndex("StartBuildingId");
+                    b.HasIndex("StartBuildingBuildingId");
 
                     b.HasIndex("TrailerId");
 
@@ -692,7 +695,7 @@ namespace MostAspNetCore.Migrations
 
                     b.HasOne("MostLib.Building", "StartBuilding")
                         .WithMany()
-                        .HasForeignKey("StartBuildingId")
+                        .HasForeignKey("StartBuildingBuildingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
