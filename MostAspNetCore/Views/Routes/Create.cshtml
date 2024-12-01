@@ -5,6 +5,7 @@
 @{
     ViewData["Title"] = "Create";
     string mapBoxToken = Configuration["MapBoxToken"];
+    int productCount = 0;
 }
 
 <h1>Create</h1>
@@ -15,36 +16,37 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            <div class="form-group mb-1">
                 <label asp-for="SelectedDriverId" class="control-label"></label>
                 <select asp-for="SelectedDriverId" class="form-control" asp-items="Model.DriversList"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-1">
                 <label asp-for="SelectedTransportId" class="control-label"></label>
                 <select asp-for="SelectedTransportId" class="form-control" asp-items="Model.TransportsList"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-1">
                 <label asp-for="SelectedTrailerId" class="control-label"></label>
                 <select asp-for="SelectedTrailerId" class="form-control" asp-items="Model.TrailersList"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-1">
                 <label asp-for="SelectedStartBuildingId" class="control-label"></label>
                 <select asp-for="SelectedStartBuildingId" class="form-control" asp-items="Model.BuildingsList" onchange="optionChange()"></select>
                 <span asp-validation-for="SelectedStartBuildingId" class="text-danger"></span>
             </div>
-            <div class="form-group">                
+            <div class="form-group mb-3">
                 <label asp-for="SelectedEndBuildingId" class="control-label"></label>
                 <select asp-for="SelectedEndBuildingId" class="form-control" asp-items="Model.BuildingsList" onchange="optionChange()"></select>
                 <span asp-validation-for="SelectedEndBuildingId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="CargosList" class="control-label"></label>
-                <input asp-for="CargosList" class="form-control" />
-                <span asp-validation-for="CargosList" class="text-danger"></span>
+            <div class="row">
+                <div class="form-group col-md-3">
+                    <input type="submit" value="Создать" class="btn btn-primary" />
+                </div>
+                <div class="col-md-5">
+                    <a asp-action="index" type="button" class="btn btn-secondary">Назад к списку</a>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+            
         </form>
     </div>
     <div class="col-md-8">
@@ -52,9 +54,60 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+
+<h2>Грузы</h2>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    @for (int i = 0; i < Model.CargosList.Count; i++)
+    {
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="@i-cargo-tab" data-bs-toggle="tab" data-bs-target="#@i-cargo" type="button" role="tab" aria-controls="profile" aria-selected="false">@Model.CargosList[i].DestinationBuilding.BuildingName</button>
+        </li>
+    }
+</ul>
+
+
+    <div class="tab-content" id="myTabContent">
+    @for (int i = 0; i < Model.CargosList.Count; i++)
+    {
+        <div class="tab-pane active" id="@i-cargo" role="tabpanel" aria-labelledby="@i-cargo-tab">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Название</th>
+                        <th scope="col">Тип упаковки</th>
+                        <th scope="col">Категория</th>
+                        <th scope="col">Хрупкий</th>
+                        <th scope="col">Необходим рефрижератор</th>
+                        <th scope="col">Длина</th>
+                        <th scope="col">Ширина</th>
+                        <th scope="col">Высота</th>
+                        <th scope="col">Количество</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int j = 1; j < Model.CargosList[i].ProductsList.Count + 1; j++)
+                    {
+                        <tr>
+                            <th scope="row">@j</th>
+                            <td>@Model.CargosList[i].ProductsList[j - 1].ProductName</td>
+                            <td>@Model.CargosList[i].ProductsList[j - 1].ProductPackageTypeId</td>
+                            <td>@Model.CargosList[i].ProductsList[j - 1].ProductCategoryId</td>
+                            <td>@Model.CargosList[i].ProductsList[j - 1].IsFragile</td>
+                            <td>@Model.CargosList[i].ProductsList[j - 1].NeedsRefrigerator</td>
+                            <td>@Model.CargosList[i].ProductsList[j - 1].Length</td>
+                            <td>@Model.CargosList[i].ProductsList[j - 1].Width</td>
+                            <td>@Model.CargosList[i].ProductsList[j - 1].Height</td>
+                            <td>@Model.CargosList[i].ProductsList[j - 1].Quantity</td>
+                        </tr>
+                    }
+                    
+                </tbody>
+            </table>
+        </div>
+    }
+    </div>
 
 <!--MapBox-->
 <script>

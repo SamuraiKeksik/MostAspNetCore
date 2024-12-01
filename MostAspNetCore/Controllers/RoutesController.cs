@@ -75,6 +75,7 @@ namespace MostAspNetCore.Controllers
                 TransportsList = new SelectList(_context.Transports, "TransportId", "Brand"),
                 BuildingsList = new SelectList(_context.Buildings, "BuildingId", "BuildingDescription"),
             };
+            cargo.DestinationBuilding = _context.Buildings.First(); //ТЕСТОВОЕ ЗДАНИЕ - УБРАТЬ
             model.CargosList.Add(cargo);
 
             /*
