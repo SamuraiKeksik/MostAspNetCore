@@ -404,9 +404,6 @@ namespace MostAspNetCore.Migrations
                     b.Property<Guid>("DriverId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("StartBuildingId")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid?>("TrailerId")
                         .HasColumnType("TEXT");
 
@@ -420,8 +417,6 @@ namespace MostAspNetCore.Migrations
                     b.HasKey("RouteId");
 
                     b.HasIndex("DriverId");
-
-                    b.HasIndex("StartBuildingId");
 
                     b.HasIndex("TrailerId");
 
@@ -690,12 +685,6 @@ namespace MostAspNetCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MostLib.Building", "StartBuilding")
-                        .WithMany()
-                        .HasForeignKey("StartBuildingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MostLib.Trailer", "Trailer")
                         .WithMany()
                         .HasForeignKey("TrailerId");
@@ -713,8 +702,6 @@ namespace MostAspNetCore.Migrations
                         .IsRequired();
 
                     b.Navigation("Driver");
-
-                    b.Navigation("StartBuilding");
 
                     b.Navigation("Trailer");
 
